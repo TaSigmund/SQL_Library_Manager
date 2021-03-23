@@ -9,14 +9,14 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 
-//db
-const Sequelize = require('sequelize');
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: 'library.db'
-});
+//db setup
+const db = require('./models/index.js')
+const Sequelize = db.Sequelize;
+const sequelize = db.sequelize;
 
+//db sync
 (async () => {
+  await sequelize.sync();
   try {
     await sequelize.authenticate();
     console.log('Connection has been established successfully.');
