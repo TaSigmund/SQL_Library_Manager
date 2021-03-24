@@ -40,18 +40,26 @@ app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+  let error404 = new Error();
+  error404.status = 404;
+  error404.message = 'The page you are looking for does not exist';
+  next(error404);
 });
 
 // error handler
 app.use(function(err, req, res, next) {
+  err.message = err.message || "Oh no! An error has occured." //sets error message
+
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+  res.status(err.status || 500); //checks whether there already is an error status
+
+  (err.status === 404)?
+  res.render('page-not-found'): //for 404s
+  res.render('error', {error: err}); //for all other errors
 });
 
 module.exports = app;
