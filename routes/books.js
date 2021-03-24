@@ -3,20 +3,32 @@ var router = express.Router();
 const models = require('../models');
 const { Book } = models;
 
-/* GET users listing. */
-router.get('/', async (req, res, next)=> {
-  try {
+/*ASYNC HANDLER*/
+function asyncHandler(cb){
+  return async(req , res , next) => {
+    try {await cb(req,res,next)}
+    catch (error) {res.status(500).send(error)}
+  }
+}
+
+/* GET books listing. */
+router.get('/', asyncHandler(async (req, res)=> {
     const books = await Book.findAll();
     const booksList = await books.map(books => books.toJSON())
     res.render('index', {books: booksList})
-  }
-  catch(error){
-    console.error('Error connecting to the database: ', error);
-  }
-});
+}));
+
+/* GET form to create a new book. */
 
 router.get('/new', (req, res, next) => {
-  res.render('new')
+  res.render('new-book')
 }) 
+
+/* POST data to add a new book */
+router.post('/new', asyncHandler(async (req, res, next) => {
+    await parseInt(req.body.year);
+    const book = await Book.create(req.body);
+    res.redirect('/books');
+})) 
 
 module.exports = router;
