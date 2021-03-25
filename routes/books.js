@@ -31,4 +31,11 @@ router.post('/new', asyncHandler(async (req, res, next) => {
     res.redirect('/books');
 })) 
 
+/* GET book details */
+
+router.get('/:id', async (req, res, next) => {
+  const book = await Book.findByPk(req.params.id);
+  res.render('book-details', {book})
+}) 
+
 module.exports = router;
