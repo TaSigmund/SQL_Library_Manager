@@ -26,7 +26,7 @@ router.get('/new', (req, res, next) => {
 
 /* POST data to add a new book */
 router.post('/new', asyncHandler(async (req, res, next) => {
-    await parseInt(req.body.year);
+    parseInt(req.body.year);
     const book = await Book.create(req.body);
     res.redirect('/books');
 })) 
@@ -37,5 +37,12 @@ router.get('/:id', async (req, res, next) => {
   const book = await Book.findByPk(req.params.id);
   res.render('book-details', {book})
 }) 
+
+/* POST data to update a book entry */
+router.post('/:id', asyncHandler(async (req, res, next) => {
+  const book = await Book.findByPk(req.params.id);
+  await book.update(req.body);
+  res.redirect('/books');
+})) 
 
 module.exports = router;
