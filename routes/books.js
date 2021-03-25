@@ -7,7 +7,20 @@ const { Book } = models;
 function asyncHandler(cb){
   return async(req , res , next) => {
     try {await cb(req,res,next)}
-    catch (error) {res.status(500).send(error)}
+    catch (error) {
+      if(error.name === "SequelizeValidationError") {
+        book = await Book.build(req.body);
+        if(req.path === "/new"){
+          res.render("new-book", {error})
+        } else
+        {
+          res.render("book-details", {book, error})
+        }
+      }
+      else {
+        res.status(500).send(error)
+      }
+    }
   }
 }
 

@@ -1,7 +1,13 @@
 extends layout
 
 block content
-  h1 Update Book 
+  h1 Update Book
+  if error
+    h2(class="error") Oooops! 
+    ul(class="error")
+        li A title is required.
+        li An author is required.
+
   form(action="/books/" + book.id method="post")
     p
         label(for="title") Title 

@@ -2,9 +2,15 @@ extends layout
 
 block content
   h1 New Book 
+  if error
+    h2(class="error") Oooops! 
+    ul(class="error")
+        li A title is required.
+        li An author is required.
+        
   form(action="/books/new" method="post")
     p
-        label(for="title") Title 
+        label(for="title") Title
         input(name= "title" type="text" id="title")
     p
         label(for="author") Author 
