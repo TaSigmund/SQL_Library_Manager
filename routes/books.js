@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 const models = require('../models');
-const { Book } = models;
+const { Book } = models; //Book model
+const {Op} = models.Sequelize; //Operators
 
 /*ASYNC HANDLER*/
 function asyncHandler(cb){
@@ -29,6 +30,30 @@ router.get('/', asyncHandler(async (req, res)=> {
     const books = await Book.findAll();
     const booksList = await books.map(books => books.toJSON())
     res.render('index', {books: booksList})
+}));
+
+/* POST form to search books*/
+router.post('/', asyncHandler(async (req, res)=> {
+  const books = await Book.findAll({
+    where: { 
+      [Op.or]:{
+        title: {
+          [Op.substring]: req.body.search
+        },
+        author: {
+          [Op.substring]: req.body.search
+        },
+        genre: {
+          [Op.substring]: req.body.search
+        },
+        year: {
+          [Op.substring]: req.body.search
+        }, 
+      }
+    }
+  });
+  const booksList = await books.map(books => books.toJSON())
+  res.render('index', {books: booksList})
 }));
 
 /* GET form to create a new book. */

@@ -1,6 +1,10 @@
 extends layout
 
 block content
+  form(action="/books" method="post")
+    label(for="search") Search books 
+    input(name= "search" type="text" id="search" placeholder="What would you like to read?")
+    input(type="submit" value="Start Search")
   h1 Books
   p
     a(href="/books/new" class="button") Create New Book
