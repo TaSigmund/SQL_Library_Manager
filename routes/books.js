@@ -41,7 +41,10 @@ router.get('/:page', asyncHandler(async (req, res)=> {
       offset: skipped, //defines how many entries get skipped
       limit: 5 //defines the max number of entries returned
     });
-    const booksList = await books.map(books => books.toJSON());
+    const booksList = await books.map(books => books.toJSON());//books to display on the page
+    const numberOfBooks = await Book.count(); //total number of Books
+    const pages = await Math.ceil(numberOfBooks/5);//number of pages
+    res.locals.pages = pages;
     res.render('index', {books: booksList})
 }
 else {

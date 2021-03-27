@@ -23,21 +23,10 @@ block content
           td #{book.author}
           td #{book.genre}
           td #{book.year}
-  ul(class="pagination") 
-    li
-      a <<
-  ul(class="pagination") 
-    li
-      a 1
-    li
-      a 2
-    li 
-      a 3
-    li 
-      a 4
-    li 
-      a 5
-  ul(class="pagination") 
-    li
-      a >>
+  - var n = 1;
+  - var l = 1
+  ul(class="pagination")
+    while n <= pages
+      li
+        a(href=l++)=n++
   
