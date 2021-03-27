@@ -26,11 +26,13 @@ block content
   - var l = 1;
   - var n= 1;
   ul(class="pagination")
-    li
-      a(href=page-1) <<
-    while n <= pages && n<=5
+    if page > 1
       li
+        a(href=page-1) <<
+    while n <= pages && n<=5
+      li(class=page===n?"active":"")
         a(href=l++)=n++
-    li
-      a(href=page+1) >>
+    if page < pages
+      li
+        a(href=page+1) >>
   

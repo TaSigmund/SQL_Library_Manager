@@ -107,3 +107,11 @@ input[type=text] {
   margin: 3px;
   border: 1px solid #01b189;
 }
+
+.pagination li.active {
+  background-color: #9de29d;
+}
+
+.pagination li:hover {
+  background-color: #E7E7E7;
+}
