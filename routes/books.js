@@ -32,6 +32,18 @@ router.get('/', asyncHandler(async (req, res)=> {
     res.render('index', {books: booksList})
 }));
 
+/* GET books listing with pagination. */
+router.get('/:page', asyncHandler(async (req, res)=> {
+  let page = req.params.page;
+  let skipped= (page*5)-5; //defines the value for offset
+  const books = await Book.findAll({ 
+    offset: skipped, //defines how many entries get skipped
+    limit: 5 //defines the max number of entries returned
+  });
+  const booksList = await books.map(books => books.toJSON());
+  res.render('index', {books: booksList})
+}))
+
 /* POST form to search books*/
 router.post('/', asyncHandler(async (req, res)=> {
   const books = await Book.findAll({
