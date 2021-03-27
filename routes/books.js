@@ -35,13 +35,20 @@ router.get('/', asyncHandler(async (req, res)=> {
 /* GET books listing with pagination. */
 router.get('/:page', asyncHandler(async (req, res)=> {
   let page = req.params.page;
-  let skipped= (page*5)-5; //defines the value for offset
-  const books = await Book.findAll({ 
-    offset: skipped, //defines how many entries get skipped
-    limit: 5 //defines the max number of entries returned
-  });
-  const booksList = await books.map(books => books.toJSON());
-  res.render('index', {books: booksList})
+  if (!isNaN(page)){
+    let skipped= (page*5)-5; //defines the value for offset
+    const books = await Book.findAll({ 
+      offset: skipped, //defines how many entries get skipped
+      limit: 5 //defines the max number of entries returned
+    });
+    const booksList = await books.map(books => books.toJSON());
+    res.render('index', {books: booksList})
+}
+else {
+  let error = new Error();
+  error.status = 404;
+  res.render('page-not-found', {error})
+}
 }))
 
 /* POST form to search books*/
