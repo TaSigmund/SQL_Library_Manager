@@ -32,7 +32,8 @@ router.get('/page/:page', asyncHandler(async (req, res, next)=> {
     let skipped= (page*5)-5; //defines the value for offset
     const books = await Book.findAll({ 
       offset: skipped, //defines how many entries get skipped
-      limit: 5 //defines the max number of entries returned
+      limit: 5, //defines the max number of entries returned
+      order: [['year', 'DESC']]
     });
   const booksList = await books.map(books => books.toJSON());//books to display on the page
   const numberOfBooks = await Book.count(); //total number of Books
@@ -68,15 +69,15 @@ router.post('/', asyncHandler(async (req, res)=> {
         year: {
           [Op.substring]: req.body.search
         }, 
-      }
-    }
+      } 
+    },
+    order: [['year', 'DESC']]
   });
   const booksList = await books.map(books => books.toJSON())
   res.render('index', {books: booksList})
 }));
 
 /* GET form to create a new book. */
-
 router.get('/new', (req, res, next) => {
   res.render('new-book')
 }) 
@@ -96,7 +97,9 @@ router.get('/:id', async (req, res, next) => {
       next()
     }
     else {
-    res.render('book-details', {book})}}
+    res.render('book-details', {book})
+    }
+  }
   else {
     next()
   }
@@ -124,14 +127,12 @@ router.post('/:id/delete', asyncHandler(async (req, res, next) => {
   next(err);
 })
 
-/*** 
-global error handler 
-***/
+/*global error handler*/
 router.use((err, req, res, next) => {
   if (!err.status) {err.status = 500}; //sets a status if necessary
   if (!err.message) {err.message = 'A server error has occured'}; //sets an error message if necessary
   
-  /* the following lines render the appropriate views */
+  //the following lines render the appropriate views 
   if (err.status === 404) {
       res.render('page-not-found', { error: err })
   }
