@@ -23,13 +23,13 @@ block content
           td #{book.author}
           td #{book.genre}
           td #{book.year}
-  - var l = 1;
-  - var n= 1;
+  - var l = page;
+  - var n= page;
   ul(class="pagination")
     if page > 1
       li
         a(href=page-1) <<
-    while n <= pages && n<=5
+    while n <= pages && n<=page+4
       li(class=page===n?"active":"")
         a(href=l++)=n++
     if page < pages

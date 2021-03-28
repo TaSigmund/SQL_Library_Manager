@@ -85,11 +85,10 @@ router.get('/new', (req, res, next) => {
 router.post('/new', asyncHandler(async (req, res, next) => {
     parseInt(req.body.year);
     const book = await Book.create(req.body);
-    res.redirect('/books');
+    res.redirect('/');
 })) 
 
 /* GET book details */
-
 router.get('/:id', async (req, res, next) => {
   if (!isNaN(req.params.id)){ //makes sure there is an id to match
     const book = await Book.findByPk(req.params.id);
@@ -107,14 +106,14 @@ router.get('/:id', async (req, res, next) => {
 router.post('/:id', asyncHandler(async (req, res, next) => {
   const book = await Book.findByPk(req.params.id);
   await book.update(req.body);
-  res.redirect('/books');
+  res.redirect('/');
 })) 
 
 /* POST data to delete a book entry */
 router.post('/:id/delete', asyncHandler(async (req, res, next) => {
   const book = await Book.findByPk(req.params.id);
   await book.destroy();
-  res.redirect('/books');
+  res.redirect('/');
 })) 
 
  /* 404 error that then gets passed to the global error handler */
