@@ -19,21 +19,14 @@ function asyncHandler(cb){
         }
       }
       else {
-        res.status(500).send(error)
+        next(error)
       }
     }
   }
 }
 
-/* GET books listing. */
-router.get('/', asyncHandler(async (req, res)=> {
-    const books = await Book.findAll();
-    const booksList = await books.map(books => books.toJSON())
-    res.render('index', {books: booksList})
-}));
-
 /* GET books listing with pagination. */
-router.get('/:page', asyncHandler(async (req, res)=> {
+router.get('/page/:page', asyncHandler(async (req, res, next)=> {
   let page = req.params.page;
   if (!isNaN(page)){
     let skipped= (page*5)-5; //defines the value for offset
@@ -41,17 +34,20 @@ router.get('/:page', asyncHandler(async (req, res)=> {
       offset: skipped, //defines how many entries get skipped
       limit: 5 //defines the max number of entries returned
     });
-    const booksList = await books.map(books => books.toJSON());//books to display on the page
-    const numberOfBooks = await Book.count(); //total number of Books
-    const pages = await Math.ceil(numberOfBooks/5);//number of pages
-    res.locals.pages = pages;
-    res.locals.page = parseInt(page);
+  const booksList = await books.map(books => books.toJSON());//books to display on the page
+  const numberOfBooks = await Book.count(); //total number of Books
+  const pages = await Math.ceil(numberOfBooks/5);//number of pages
+  res.locals.pages = pages;
+  res.locals.page = parseInt(page);//needs to be a number so we can do calculations in the pug view
+    if(page>pages) {
+      next()
+    }
+    else{
     res.render('index', {books: booksList})
+    }
 }
 else {
-  let error = new Error();
-  error.status = 404;
-  res.render('page-not-found', {error})
+  next()
 }
 }))
 
@@ -95,8 +91,16 @@ router.post('/new', asyncHandler(async (req, res, next) => {
 /* GET book details */
 
 router.get('/:id', async (req, res, next) => {
-  const book = await Book.findByPk(req.params.id);
-  res.render('book-details', {book})
+  if (!isNaN(req.params.id)){ //makes sure there is an id to match
+    const book = await Book.findByPk(req.params.id);
+    if (!book){ //renders 404 if the user pastes in a url with an id that doesn't exist
+      next()
+    }
+    else {
+    res.render('book-details', {book})}}
+  else {
+    next()
+  }
 }) 
 
 /* POST data to update a book entry */
@@ -112,5 +116,30 @@ router.post('/:id/delete', asyncHandler(async (req, res, next) => {
   await book.destroy();
   res.redirect('/books');
 })) 
+
+ /* 404 error that then gets passed to the global error handler */
+ router.use((req, res, next)=>{
+  const err = new Error();
+  err.status = 404;
+  err.message = 'The page you are looking for does not exist.'
+  next(err);
+})
+
+/*** 
+global error handler 
+***/
+router.use((err, req, res, next) => {
+  if (!err.status) {err.status = 500}; //sets a status if necessary
+  if (!err.message) {err.message = 'A server error has occured'}; //sets an error message if necessary
+  
+  /* the following lines render the appropriate views */
+  if (err.status === 404) {
+      res.render('page-not-found', { error: err })
+  }
+  else {
+      res.render('error', { error: err })
+  }
+}
+)
 
 module.exports = router;
