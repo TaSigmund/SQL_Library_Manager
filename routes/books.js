@@ -90,19 +90,9 @@ router.post('/new', asyncHandler(async (req, res, next) => {
 })) 
 
 /* GET book details */
-router.get('/:id', async (req, res, next) => {
-  if (!isNaN(req.params.id)){ //makes sure there is an id to match
-    const book = await Book.findByPk(req.params.id);
-    if (!book){ //renders 404 if the user pastes in a url with an id that doesn't exist
-      next()
-    }
-    else {
-    res.render('book-details', {book})
-    }
-  }
-  else {
-    next()
-  }
+router.get('/:id', async (req, res, next) => { 
+    const book = await Book.findByPk(req.params.id)
+    {res.render('book-details', {book})}
 }) 
 
 /* POST data to update a book entry */
@@ -130,7 +120,7 @@ router.post('/:id/delete', asyncHandler(async (req, res, next) => {
 /*global error handler*/
 router.use((err, req, res, next) => {
   if (!err.status) {err.status = 500}; //sets a status if necessary
-  if (!err.message) {err.message = 'A server error has occured'}; //sets an error message if necessary
+  if (!err.message || err.status === 500) {err.message = 'A server error has occured'}; //sets an error message if necessary and makes the default express 500 error message more readable
   
   //the following lines render the appropriate views 
   if (err.status === 404) {
